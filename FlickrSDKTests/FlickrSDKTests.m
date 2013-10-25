@@ -33,10 +33,35 @@
     [super tearDown];
 }
 
+- (void)testRequestTypeSet
+{
+    [FlickrAPITest registerAPIKey:@"Somekey"];
+    FlickrAPI* api = [[FlickrAPITest alloc] initWithRequestType:FlickrRequestTypeInteresting];
+    [(FlickrAPITest*)api setShowSuccess:YES];
+    [api fetchPhotosWithSuccess:^(PageIndex pageIndex, NSArray *photos) {
+        XCTAssertTrue(YES, @"Request Type is defined");
+    } failure:^(PageIndex pageIndex, NSError *error) {
+        XCTAssertTrue(NO, @"Request Type is not defined");
+    }];
+}
+
+- (void)testAPIKeySet
+{
+    [FlickrAPITest registerAPIKey:@"Somekey"];
+    FlickrAPI* api = [[FlickrAPITest alloc] initWithRequestType:FlickrRequestTypeInteresting];
+    [(FlickrAPITest*)api setShowSuccess:YES];
+    [api fetchPhotosWithSuccess:^(PageIndex pageIndex, NSArray *photos) {
+        XCTAssertTrue(YES, @"API Key is defined");
+    } failure:^(PageIndex pageIndex, NSError *error) {
+        XCTAssertTrue(NO, @"API Key not defined");
+    }];
+}
+
 - (void)testNoRequestType
 {
     [FlickrAPITest registerAPIKey:@"Somekey"];
     FlickrAPI* api = [[FlickrAPITest alloc] init];
+    
     [api fetchPhotosWithSuccess:^(PageIndex pageIndex, NSArray *photos) {
         XCTAssertTrue(NO, @"Request Type is defined");
     } failure:^(PageIndex pageIndex, NSError *error) {
