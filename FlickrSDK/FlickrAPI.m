@@ -33,7 +33,6 @@ NSString* const MostRecentYQL = @"http://query.yahooapis.com/v1/public/yql?q=sel
                                                            success:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, id JSON))success
                                                            failure:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON))failure;
 
-
 @end
 
 @implementation FlickrAPI
@@ -140,7 +139,7 @@ static NSString* APIKEY;
         return;
     }
     
-    // Check what page number the user wants to fetch
+    // Check the page number the user wants to fetch
     if (self.delegate){
         self.offset = [self.delegate pageNumberForFetchRequest];
     }else{
@@ -150,6 +149,7 @@ static NSString* APIKEY;
     NSString* urlStr = [self buildURL];
     NSURLRequest* request = [self buildRequestWithURL:urlStr];
     
+    // The Success Handler
     void (^successBlock)(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) = ^(NSURLRequest *request, NSHTTPURLResponse *response, id JSON) {
         
         NSDictionary* query = (NSDictionary*) JSON[@"query"];
@@ -166,6 +166,7 @@ static NSString* APIKEY;
         success(pi, photosResult);
     };
     
+    // The Failure handler
     void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) = ^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
         PageIndex pi;
         pi.pageNumber = self.offset;
@@ -173,10 +174,11 @@ static NSString* APIKEY;
         failure(pi, error);
     };
     
+    // Get the JSON operation request object
     AFJSONRequestOperation* jsonOperation = [self buildAFJSONRequestOperationWithRequest:request
                                                                                  success:successBlock
                                                                                  failure:failureBlock];
-    
+    // Send the JSON request
     [jsonOperation start];
 }
 
