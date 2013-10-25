@@ -27,7 +27,7 @@
 
 - (void)start {
     if (self.needsSuccess){
-        NSDictionary* JSON = @{ @"query" : @{ @"result" : @{ @"photo": @[@{
+        NSDictionary* JSON = @{ @"query" : @{ @"results" : @{ @"photo": @[@{
             @"farm": @"4",
             @"id": @"10442613173",
             @"isfamily": @"0",
@@ -48,7 +48,7 @@
             @"server": @"7381",
             @"title": @"Balder Footbridge (2)"
             } ], }, }, };
-        
+            
             self.success(nil, nil, JSON);
     }else{
         NSError* error;

@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 #import "FlickrFetchRequestDelegate.h"
 
-@interface FirstViewController : UIViewController <FlickrFetchRequestDelegate>
+@interface FirstViewController : UIViewController <FlickrFetchRequestDelegate, UITableViewDataSource, UITableViewDelegate>
 @property (weak, nonatomic) IBOutlet UITableView *photoTable;
 
 @end

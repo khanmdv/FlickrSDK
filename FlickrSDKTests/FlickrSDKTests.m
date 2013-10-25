@@ -37,27 +37,36 @@
 {
     [FlickrAPITest registerAPIKey:@"Somekey"];
     FlickrAPI* api = [[FlickrAPITest alloc] init];
-    NSError* err;
-    [api startFetching:&err];
-    XCTAssertTrue(err.code == 100, @"Request Type not defined");
+    [api fetchPhotosWithSuccess:^(PageIndex pageIndex, NSArray *photos) {
+        XCTAssertTrue(NO, @"Request Type is defined");
+    } failure:^(PageIndex pageIndex, NSError *error) {
+        XCTAssertTrue(YES, @"Request Type is not defined");
+    }];
 }
 
 - (void)testNoAPIKeySet
 {
     //[FlickrAPITest registerAPIKey:@"Somekey"];
     FlickrAPI* api = [[FlickrAPITest alloc] initWithRequestType:FlickrRequestTypeInteresting];
-    NSError* err;
-    [api startFetching:&err];
-    XCTAssertTrue(err.code == 101, @"API Key not defined");
+    [api fetchPhotosWithSuccess:^(PageIndex pageIndex, NSArray *photos) {
+        XCTAssertTrue(NO, @"API Key is defined");
+    } failure:^(PageIndex pageIndex, NSError *error) {
+        XCTAssertTrue(YES, @"API Key not defined");
+    }];
 }
 
-- (void)testNoDelegateSet
+- (void)testDelegateSet
 {
     [FlickrAPITest registerAPIKey:@"Somekey"];
     FlickrAPI* api = [[FlickrAPITest alloc] initWithRequestType:FlickrRequestTypeInteresting];
-    NSError* err;
-    [api startFetching:&err];
-    XCTAssertTrue(api.delegate == nil, @"Delegate is not set");
+    api.delegate = self;
+    [(FlickrAPITest*)api setShowSuccess:YES];
+    [api fetchPhotosWithSuccess:^(PageIndex pageIndex, NSArray *photos) {
+        XCTAssertTrue(pageIndex.pageNumber == 5, @"Delegate is set");
+    } failure:^(PageIndex pageIndex, NSError *error) {
+        ;
+    }];
+    
 }
 
 - (void)testSuccessBlock
@@ -66,10 +75,11 @@
     [FlickrAPITest registerAPIKey:@"Somekey"];
     FlickrAPI* api = [[FlickrAPITest alloc] initWithRequestType:FlickrRequestTypeInteresting];
     [(FlickrAPITest*)api setShowSuccess:YES];
-    NSError* err;
-    api.delegate = self;
-    [api startFetching:&err];
-    XCTAssertTrue(self.succes, @"Delegate is not set");
+    [api fetchPhotosWithSuccess:^(PageIndex pageIndex, NSArray *photos) {
+        XCTAssertTrue(photos.count == 2, @"Success was called");
+    } failure:^(PageIndex pageIndex, NSError *error) {
+        XCTAssertTrue(NO, @"Success was not called");;
+    }];
 }
 
 - (void)testFailureBlock
@@ -78,17 +88,15 @@
     [FlickrAPITest registerAPIKey:@"Somekey"];
     FlickrAPI* api = [[FlickrAPITest alloc] initWithRequestType:FlickrRequestTypeInteresting];
     [(FlickrAPITest*)api setShowError:YES];
-    NSError* err;
-    [api startFetching:&err];
-    XCTAssertTrue(self.failure, @"Delegate is not set");
+    [api fetchPhotosWithSuccess:^(PageIndex pageIndex, NSArray *photos) {
+        XCTAssertTrue(YES, @"Failure was not called");
+    } failure:^(PageIndex pageIndex, NSError *error) {
+        XCTAssertTrue(error != nil, @"Failure was called");;
+    }];
 }
 
--(void)didFinishFetchingPhotos: (NSArray*) photos forPage :(PageIndex) pageIndex{
-    self.succes = YES;
-}
-
--(void)didFinishWithError : (NSError*) error forPage: (PageIndex) pageIndex{
-    self.failure = YES;
+-(NSUInteger) pageNumberForFetchRequest{
+    return 5;
 }
 
 @end

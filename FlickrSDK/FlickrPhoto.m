@@ -8,8 +8,8 @@
 
 #import "FlickrPhoto.h"
 
-NSString* completeUrlStr = @"http://farm%@.staticflickr.com/%@/%@_%@.jpg";
-NSString* thumbnailUrl = @"http://farm%@.staticflickr.com/%@/%@_%@_t_d.jpg";
+NSString* const completeUrlStr = @"http://farm%@.staticflickr.com/%@/%@_%@.jpg";
+NSString* const thumbnailUrl = @"http://farm%@.staticflickr.com/%@/%@_%@_t_d.jpg";
 
 @implementation FlickrPhoto
 

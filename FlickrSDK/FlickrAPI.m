@@ -10,23 +10,25 @@
 #import <AFNetworking.h>
 #import "FlickrPhoto.h"
 
+// Constants
 NSString *const FlickrAPINoRequestTypeErrorDomain = @"FlickrAPINoRequestTypeErrorDomain";
 NSUInteger const FlickrAPINoRequestTypeErrorCode = 100;
 
 NSString *const FlickrAPIKEYNotSetDomain = @"FlickrAPIKEYNotSetDomain";
 NSUInteger const FlickrAPIKEYNotSetErrorCode = 101;
 
-NSString* MostInterestingYQL = @"http://query.yahooapis.com/v1/public/yql?q=select * from flickr.photos.interestingness(%i,%i) where api_key='%@'&diagnostics=true&format=json";
+NSString* const MostInterestingYQL = @"http://query.yahooapis.com/v1/public/yql?q=select * from flickr.photos.interestingness(%i,%i) where api_key='%@'&diagnostics=true&format=json";
 
-NSString* MostRecentYQL = @"http://query.yahooapis.com/v1/public/yql?q=select * from flickr.photos.recent(%i,%i) where api_key='%@'&diagnostics=true&format=json";
+NSString* const MostRecentYQL = @"http://query.yahooapis.com/v1/public/yql?q=select * from flickr.photos.recent(%i,%i) where api_key='%@'&diagnostics=true&format=json";
 
 
+// Flickr API
 @interface FlickrAPI ()
 
 @property (nonatomic, assign) NSUInteger offset;
 
 -(NSString*) buildURL;
--(NSURLRequest*) buildRequestWithURL;
+-(NSURLRequest*) buildRequestWithURL : (NSString*) urlStr;
 -(AFJSONRequestOperation*) buildAFJSONRequestOperationWithRequest : (NSURLRequest *)urlRequest
                                                            success:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, id JSON))success
                                                            failure:(void (^)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON))failure;
