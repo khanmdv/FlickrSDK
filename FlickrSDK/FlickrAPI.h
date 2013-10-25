@@ -9,6 +9,9 @@
 #import <Foundation/Foundation.h>
 #import "FlickrFetchRequestDelegate.h"
 
+typedef void (^SuccessBlock)(PageIndex pageIndex, NSArray* photos);
+typedef void (^FailureBlock)(PageIndex pageIndex, NSError *error);
+
 // Constants
 #define MAX_FETCH_LIMIT     1000
 #define DEFAULT_FETCH_LIMIT 10
@@ -49,6 +52,6 @@ typedef enum _FlickrRequestType{
 // public API methods
 
 // Start the fetch request
--(void) startFetching : (NSError**)error;
+-(void) fetchPhotosWithSuccess : (SuccessBlock)success failure : (FailureBlock) failure;
 
 @end

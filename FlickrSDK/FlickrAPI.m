@@ -129,10 +129,20 @@ static NSString* APIKEY;
 // public API methods
 
 // Start the fetch request
--(void) startFetching : (NSError**)error{
-
-    if ( ![self requestTypeAvailable:error] || ![self isAPIKeySet:error]){
+-(void) fetchPhotosWithSuccess : (SuccessBlock)success failure : (FailureBlock) failure{
+    NSError* error;
+    
+    if ( ![self requestTypeAvailable:&error] || ![self isAPIKeySet:&error]){
+        PageIndex pi = { self.offset, 0 };
+        failure(pi, error);
         return;
+    }
+    
+    // Check what page number the user wants to fetch
+    if (self.delegate){
+        self.offset = [self.delegate pageNumberForFetchRequest];
+    }else{
+        self.offset = 0;
     }
     
     NSString* urlStr = [self buildURL];
@@ -150,21 +160,20 @@ static NSString* APIKEY;
         pi.pageNumber = self.offset;
         pi.count = [query[@"count"] integerValue];
         
-        if (self.delegate != nil){
-            [self.delegate didFinishFetchingPhotos:photosResult forPage:pi];
-        }
+        // Call the success block
+        success(pi, photosResult);
     };
     
     void (^failureBlock)(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) = ^(NSURLRequest *request, NSHTTPURLResponse *response, NSError *error, id JSON) {
         PageIndex pi;
         pi.pageNumber = self.offset;
         pi.count = 0;
-        if (self.delegate != nil){
-            [self.delegate didFinishWithError:error forPage:pi];
-        }
+        failure(pi, error);
     };
     
-    AFJSONRequestOperation* jsonOperation = [self buildAFJSONRequestOperationWithRequest:request success:successBlock failure:failureBlock];
+    AFJSONRequestOperation* jsonOperation = [self buildAFJSONRequestOperationWithRequest:request
+                                                                                 success:successBlock
+                                                                                 failure:failureBlock];
     
     [jsonOperation start];
 }

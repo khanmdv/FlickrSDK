@@ -14,10 +14,25 @@
 @interface FirstViewController ()
 
 @property( nonatomic, strong) NSArray* photos;
+@property (nonatomic, assign) NSUInteger pageNumber;
+@property(nonatomic, strong) FlickrAPI* api;
 
 @end
 
 @implementation FirstViewController
+
+-(void)fetchPhotos{
+    if (self.api){
+        [self.api fetchPhotosWithSuccess:^(PageIndex pageIndex, NSArray *aPhotos) {
+            self.photos = aPhotos;
+            [self.photoTable reloadData];
+        } failure:^(PageIndex pageIndex, NSError *error) {
+            UIAlertView* alert = [[UIAlertView alloc] initWithTitle:@"Error" message:@"Something went wrong" delegate:nil cancelButtonTitle:@"Cancel" otherButtonTitles:@"Ok", nil];
+            [alert show];
+        }];
+        self.pageNumber++;
+    }
+}
 
 - (void)viewDidLoad
 {
@@ -25,12 +40,13 @@
 	// Do any additional setup after loading the view, typically from a nib.
     
     [FlickrAPI registerAPIKey:@"d5c7df3552b89d13fe311eb42715b510"];
-    FlickrAPI* api = [[FlickrAPI alloc] initWithRequestType:FlickrRequestTypeInteresting andFetchLimit:10];
-    api.delegate = self;
     
-    NSError* error;
-    [api startFetching:&error];
-
+    self.api = [[FlickrAPI alloc] initWithRequestType:FlickrRequestTypeInteresting andFetchLimit:10];
+    self.api.delegate = self;
+    
+    self.pageNumber = 0;
+    
+    [self fetchPhotos];
 }
 
 - (void)didReceiveMemoryWarning
@@ -40,13 +56,8 @@
 }
 
 
--(void)didFinishFetchingPhotos: (NSArray*) aPhotos forPage :(PageIndex) pageIndex{
-    self.photos = aPhotos;
-    [self.photoTable reloadData];
-}
-
--(void)didFinishWithError : (NSError*) error forPage: (PageIndex) pageIndex{
-    
+-(NSUInteger) pageNumberForFetchRequest{
+    return self.pageNumber;
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView

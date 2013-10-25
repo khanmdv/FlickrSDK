@@ -15,8 +15,6 @@ typedef struct _PageIndex{
 
 @protocol FlickrFetchRequestDelegate <NSObject>
 
--(void)didFinishFetchingPhotos: (NSArray*) photos forPage :(PageIndex) pageIndex;
-
--(void)didFinishWithError : (NSError*) error forPage: (PageIndex) pageIndex;
+-(NSUInteger) pageNumberForFetchRequest;
 
 @end
